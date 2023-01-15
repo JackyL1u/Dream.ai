@@ -7,7 +7,7 @@ import { PDFDownloadLink, Page, Text, View, Document, StyleSheet, Image } from '
 import AudioPlayer from './AudioPlayer';
 
 export default function Body() {
-    const tagsList = ["Anime", "Cartoon"]
+    const tagsList = ["Anime", "Cartoon", "Digital Art", "Photo Realistic", "Retro", "Cyber", "Fantasy"]
     const [tags, setTags] = useState<string[]>([]);
     const [audioFiles, setAudiofiles] = useState<string[]>([]);
     const [story, setStory] = useState<{ audio: string, frames: string[], text: string }[]>([]);

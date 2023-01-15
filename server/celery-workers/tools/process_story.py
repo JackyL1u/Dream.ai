@@ -15,6 +15,11 @@ from imgurpython import ImgurClient
 load_dotenv()
 nltk.load('tokenizers/punkt/english.pickle')
 
+art_style_map = {
+  "anime": "Kentaro Miura",
+  "digital art": "Beeple"
+}
+
 OPENAI_API_TOKEN = os.getenv('OPENAI_API_TOKEN')
 IMGUR_CLIENT_ID = os.getenv('IMGUR_CLIENT_ID')
 IMGUR_CLIENT_SECRET = os.getenv('IMGUR_CLIENT_SECRET')
@@ -47,8 +52,10 @@ def create_story(topic, tags):
   print(story_text)
   sentences = nltk.tokenize.sent_tokenize(story_text)
 
-  if len(sentences) > 1:
-    sentences = sentences[0:1]
+  if len(sentences) > 3:
+    sentences = sentences[0:3]
+
+  counter = 0
 
   result = []
 
@@ -63,10 +70,14 @@ def create_story(topic, tags):
     })
 
     print(sentence)
+    # for frame in frames:
+    #   counter = counter + 1
+    #   with open('./{}/{}.png'.format("images", counter), 'wb') as file:
+    #     file.write(requests.get(frame).content)
     
   print(result)
   return result
-
+    
 def create_audio(sentence):
   print("Starting Create Audio")
   model = replicate.models.get("afiaka87/tortoise-tts")
@@ -78,10 +89,10 @@ def create_audio(sentence):
   print("Finished Create Audio")
   return [url, round(audio.info.length)]
 
-def create_frames(sentence, styles, num_of_frames):
+def create_frames(sentence, tags, num_of_frames):
   print("Starting Create Frames")
 
-  prompt = "{} Create in {} style".format(sentence, ", ".join(styles))
+  prompt = '"{}" in the style of {} by '.format(sentence, tags[0].lower(), art_style_map[tags[0].lower()])
 
   image_size = 256
 
