@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  go-server:
+    build: go-server/.
+    ports:
+      - "8080:8080"
+    networks:
+      - my-network
+    env_file:
+      - .env
+    depends_on:
+      - rabbitmq
+  rabbitmq:
+    hostname: rabbitmq
+    image: "rabbitmq:3-management"
+    networks:
+      - my-network
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    restart: always
+  celery_workers:
+    build: './celery-workers'
+    user: nobody
+    networks:
+      - my-network
+    depends_on:
+      - go-server
+      - rabbitmq
+    restart: always
+    env_file:
+      - .env
+  socket-io-server:
+    build: socket-io-server
+    env_file:
+      - .env
+    networks:
+      - my-network
+    ports:
+      - "5001:5001"
+
+
+
+networks:
+  my-network:
+    driver: bridge

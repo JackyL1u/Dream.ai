@@ -1,0 +1,8 @@
+.env
+.idea
+__pycache__/
+.idea/
+.idea/
+/server/.env
+client/node_modules
+/client/.git
