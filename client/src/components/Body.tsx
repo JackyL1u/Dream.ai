@@ -3,19 +3,50 @@ import TextField from '@mui/material/TextField';
 import { useState, useRef, useEffect } from 'react';
 import Chip from '@mui/material/Chip';
 import { io } from 'socket.io-client';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import NativeSelect from '@mui/material/NativeSelect';
+import { PDFDownloadLink, Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/renderer';
 import AudioPlayer from './AudioPlayer';
 
 export default function Body() {
     const tagsList = ["Anime", "Cartoon"]
     const [tags, setTags] = useState<string[]>([]);
     const [audioFiles, setAudiofiles] = useState<string[]>([]);
+    const [story, setStory] = useState<{ audio: string, frames: string[], text: string }[]>([]);
     const [prompt, setPrompt] = useState("");
     const [imgURL, setImgURL] = useState("");
-    const [audioURL, setAudioURL] = useState("");
+
     let socket = null;
+
+    const styles = StyleSheet.create({
+        center: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flex: 1
+        },
+        section: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',color: 'white', textAlign: 'center', margin: 30, height: "512px", width: "512px"
+        },
+        textStory: {
+            color: 'black', textAlign: 'center', margin: 30
+        }
+    });
+
+    const MyDoc = () => (
+        <Document>
+            {story.map((obj) => (
+                <Page size="A4" orientation="landscape">
+                    <View style={styles.center}>
+                        <View style={styles.section}>
+                            <Image src={obj.frames[0]}></Image>
+                            <Text style={styles.textStory}>{obj.text}</Text>
+                        </View>
+                    </View>
+                </Page>
+            ))}
+        </Document>
+    );
 
     const playStory = async (story: { [key: string]: string }[]) => {
         const sleep = (ms: any) => new Promise(r => setTimeout(r, ms));
@@ -55,15 +86,16 @@ export default function Body() {
         });
 
         socket.on('message', function (data) {
-            if (data.story.story) {
-                playStory(data.story.story)
+            if (data.story) {
+                setStory(data.story)
+                playStory(data.story)
             }
         });
     };
 
     const dream = () => {
         fetch("http://localhost:8080/dream", {
-            method: 'POST', // or 'PUT'
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -166,9 +198,19 @@ export default function Body() {
                     </Grid>
                 )}
 
+                {imgURL != "" && (
+                    <Grid item xs={3}>
+                        <br />
+                        <PDFDownloadLink document={<MyDoc />} fileName="somename.pdf">
+                            {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Download your Story now!')}
+                        </PDFDownloadLink>
+                    </Grid>
+                )}
+
                 <Grid item xs={3}>
                     <AudioPlayer audioFiles={audioFiles} />
                 </Grid>
+                <br /><br /><br /><br /><br />
             </Grid>
         </div>
     );

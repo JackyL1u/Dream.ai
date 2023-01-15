@@ -16,12 +16,14 @@ app = Celery('tasks', broker=BROKER, backend='rpc://')
 @app.task()
 def process(uuid1, prompt, tags):
     query = database["dreamai"].find_one({"prompt": prompt, "tags": tags}, {"_id": False})
-    sio = socketio.Client()
-    sio.connect('http://socket-io-server:5001')
     if query is not None:
-        sio.emit("message", {"uuid": uuid1, "successful": True, "story": query})
+        sio = socketio.Client()
+        sio.connect('http://socket-io-server:5001')
+        sio.emit("message", {"uuid": uuid1, "successful": True, "story": query.get("story")})
     else:
         story = create_story(prompt, tags)
+        sio = socketio.Client()
+        sio.connect('http://socket-io-server:5001')
         sio.emit("message", {"uuid": uuid1, "successful": True, "story": story})
         query = database["dreamai"].insert_one({"prompt": prompt, "tags": tags, "story": story})
     return ("Successful")

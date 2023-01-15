@@ -10,11 +10,16 @@ from PIL import Image, ImageOps, ImageChops
 from dotenv import load_dotenv
 from urllib.request import urlretrieve
 from mutagen.mp3 import MP3
+from imgurpython import ImgurClient
 
 load_dotenv()
 nltk.load('tokenizers/punkt/english.pickle')
 
 OPENAI_API_TOKEN = os.getenv('OPENAI_API_TOKEN')
+IMGUR_CLIENT_ID = os.getenv('IMGUR_CLIENT_ID')
+IMGUR_CLIENT_SECRET = os.getenv('IMGUR_CLIENT_SECRET')
+
+imgur_client = ImgurClient(IMGUR_CLIENT_ID, IMGUR_CLIENT_SECRET)
 
 openai.api_key = OPENAI_API_TOKEN
 
@@ -36,21 +41,18 @@ def create_story(topic, tags):
     story_text = story_text + gpt3_response.choices[0].text
     if story_text[-1] in [".", "!"]:
       break
+  story_text = story_text.replace('\n', '')
   print("Finished Create Story Text")
 
   print(story_text)
   sentences = nltk.tokenize.sent_tokenize(story_text)
 
-  if len(sentences) > 3:
-    sentences = sentences[0:3]
-
-  counter = 0
+  if len(sentences) > 1:
+    sentences = sentences[0:1]
 
   result = []
 
   for sentence in sentences:
-    sentence = sentence.replace('\n', ' ')
-
     audio, duration = create_audio(sentence)
     frames = create_frames(sentence, tags, duration)
 
@@ -92,7 +94,9 @@ def create_frames(sentence, styles, num_of_frames):
         n=1,
         size="{}x{}".format(image_size, image_size)
       )
-      image_url = dalle2_response['data'][0]['url']
+      dalle2_image_url = dalle2_response['data'][0]['url']
+      imgur_response = imgur_client.upload_from_url(dalle2_image_url)
+      image_url = imgur_response["link"]
       frames.append(image_url)
     else:
       image = Image.open(requests.get(frames[-1], stream=True).raw)
@@ -114,7 +118,9 @@ def create_frames(sentence, styles, num_of_frames):
         n=1,
         size="{}x{}".format(image_size, image_size)
       )
-      image_url = dalle2_response['data'][0]['url']
+      dalle2_image_url = dalle2_response['data'][0]['url']
+      imgur_response = imgur_client.upload_from_url(dalle2_image_url)
+      image_url = imgur_response["link"]
       frames.append(image_url)
   print("Finished Create Frames")
   return frames

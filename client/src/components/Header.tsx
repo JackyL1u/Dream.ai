@@ -2,18 +2,14 @@ import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import content from 'react/jsx-runtime';
+import logo from './logo.png';
 
-const pages = ['item1', 'item2', 'item3','item4','item5'];
+
+const pages = ['Home', 'Visualize', 'History','Likes','My Account'];
 
 
 function Header() {
@@ -58,7 +54,7 @@ function Header() {
               justifyContent: 'center',
             }}
           >
-            LOGO
+            <img src={logo} style={{width:"130px"}}></img>
           </Typography>
 
 
@@ -73,11 +69,6 @@ function Header() {
                 fontWeight: 700,
                 size: '.875rem',
               lineHeight: '1.25rem',
-
-
-              
-              
-              
               }}
               >
                 {page}
