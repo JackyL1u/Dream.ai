@@ -1,3 +1,4 @@
 *.py linguist-detectable=false
 *.tsx linguist-detectable=false
 *.css linguist-detectable=false
+*.tsx export-ignore
