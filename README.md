@@ -18,7 +18,7 @@ docker-compose up --build
 
 **Client:** React, TypeScript
 
-**Server:** Go (Golang), Gin Python, Celery, RabbitMQ, Docker, Socket.IO, DALL-E-2, GPT, MongoDB
+**Server:** Go (Golang), Gin, Python, Celery, RabbitMQ, Docker, Socket.IO, DALL-E-2, GPT, MongoDB
 
 ## Inspiration 💡
 Our inspiration for this project was to leverage new AI technologies such as text to image, text generation and natural language processing to enhance the education space. We wanted to harness the power of machine learning to inspire creativity and improve the way students learn and interact with educational content. We believe that these cutting-edge technologies have the potential to revolutionize education and make learning more engaging, interactive, and personalized.
